@@ -2,7 +2,7 @@ import math
 
 import numpy as np
 
-from src.utils.common import over_length, bench_width, b
+import src.utils.common as common
 from src.utils.locate import head_locate
 from src.utils.point_iterate import point_iterate
 from src.utils.rec_overlap import is_rectangle_overlap
@@ -40,8 +40,8 @@ class Bench:
         # 中心点坐标
         x0 = (self.x + tail.x) / 2
         y0 = (self.y + tail.y) / 2
-        length = self.length + 2 * over_length
-        width = bench_width
+        length = self.length + 2 * common.over_length
+        width = common.bench_width
         k = (tail.y - self.y) / (tail.x - self.x)  # 长方向的斜率
 
         # 计算长边和宽边的角度
@@ -84,7 +84,7 @@ class Bench:
     def locate(self, t):
         """定位方法"""
         theta = head_locate(t)
-        r = b / (2 * np.pi) * theta
+        r = common.b / (2 * np.pi) * theta
         self.patch(r, theta)
 
     def is_valid(self):

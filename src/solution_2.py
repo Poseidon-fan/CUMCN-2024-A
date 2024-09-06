@@ -1,4 +1,5 @@
 from src.bench import get_benches
+from src.utils.overall_length import overall_length
 
 benches = []
 
@@ -18,8 +19,17 @@ def validate():
 
 def solve():
     global benches
-    benches = get_benches(412.48)
-    print(validate())
+    left = 10
+    right = int(overall_length())
+    while right - left > 1e-6:
+        middle = (left + right) / 2
+        benches = get_benches(middle)
+        if validate():
+            left = middle
+        else:
+            right = middle
+    print(left)
+
 
 
 if __name__ == '__main__':
