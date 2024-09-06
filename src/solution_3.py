@@ -41,7 +41,6 @@ def solve():
     right = 0.55
     while right - left > 1e-6:
         middle = (left + right) / 2
-        print(middle, margin_radius(middle))
         if margin_radius(middle) < 4.5:
             right = middle
         else:
@@ -49,8 +48,6 @@ def solve():
     print(left)
 
 
-
 if __name__ == '__main__':
     solve()
-
 

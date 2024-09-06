@@ -6,6 +6,7 @@ import src.utils.common as common
 from src.utils.locate import head_locate
 from src.utils.point_iterate import point_iterate
 from src.utils.rec_overlap import is_rectangle_overlap
+from src.utils.speed import get_speed
 
 
 class Bench:
@@ -16,6 +17,7 @@ class Bench:
         self.theta = 0  # 头部的极角
         self.x = 0  # 头部的x坐标
         self.y = 0  # 头部的y坐标
+        self.speed = 1
 
     def __str__(self):
         return '极坐标: [' + str(self.r) + ', ' + str(self.theta) + '] ' + '直角坐标: [' + str(self.x) + ',' + str(self.y) + ']'
@@ -31,6 +33,7 @@ class Bench:
         r, theta = point_iterate(self)
         next_bench = Bench(length)
         next_bench.patch(r, theta)
+        next_bench.speed = get_speed(self.theta, theta, self.speed)
         return next_bench
 
     def rec_transform(self):
