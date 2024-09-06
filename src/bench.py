@@ -18,7 +18,7 @@ class Bench:
         self.y = 0  # 头部的y坐标
 
     def __str__(self):
-        return '[' + str(self.x) + ', ' + str(self.y) + ']'
+        return '极坐标: [' + str(self.r) + ', ' + str(self.theta) + '] ' + '直角坐标: [' + str(self.x) + ',' + str(self.y) + ']'
 
     def distance(self, bench):
         """
@@ -87,9 +87,26 @@ class Bench:
         r = b / (2 * np.pi) * theta
         self.patch(r, theta)
 
+    def is_valid(self):
+        return self.theta <= 2 * math.pi * 16
+
+def get_benches(t):
+    benches = []
+    first = Bench(2.86)
+    first.locate(t)
+
+    benches.append(first)
+    cur_bench = first
+
+    for i in range(222):
+        next_bench = cur_bench.next(1.65)
+        benches.append(next_bench)
+        cur_bench = next_bench
+    return benches
+
 
 if __name__ == '__main__':
     bench = Bench(2.86)
-    bench.patch(7.160150814242085, 81.79737162406512)
+    bench.patch(8.699964553170402, 99.38816264266087)
     print(bench.next(bench.length).distance(bench.next(bench.length).next(bench.length)))  # 2.86
     print(bench.overlap_test(bench))

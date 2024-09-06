@@ -23,10 +23,7 @@ def point_iterate(bench):
 
     return r_solution, theta_solution
 
-    # 返回构造出来的结点
-    # bench_next = Bench(len_)
-    # bench_next.patch(r_solution, theta_solution)
-    # return bench_next
+
 
 
 
