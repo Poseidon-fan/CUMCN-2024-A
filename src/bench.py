@@ -2,7 +2,8 @@ import math
 
 import numpy as np
 
-from src.utils.common import over_length, bench_width
+from src.utils.common import over_length, bench_width, b
+from src.utils.locate import head_locate
 from src.utils.point_iterate import point_iterate
 from src.utils.rec_overlap import is_rectangle_overlap
 
@@ -17,7 +18,7 @@ class Bench:
         self.y = 0  # 头部的y坐标
 
     def __str__(self):
-        return '[' + str(self.r) + ', ' + str(self.theta) + ']'
+        return '[' + str(self.x) + ', ' + str(self.y) + ']'
 
     def distance(self, bench):
         """
@@ -80,8 +81,15 @@ class Bench:
         """碰撞检测"""
         return is_rectangle_overlap(self.rec_transform(), bench.rec_transform())
 
+    def locate(self, t):
+        """定位方法"""
+        theta = head_locate(t)
+        r = b / (2 * np.pi) * theta
+        self.patch(r, theta)
+
 
 if __name__ == '__main__':
     bench = Bench(2.86)
     bench.patch(7.160150814242085, 81.79737162406512)
+    print(bench.next(bench.length).distance(bench.next(bench.length).next(bench.length)))  # 2.86
     print(bench.overlap_test(bench))
