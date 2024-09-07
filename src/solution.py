@@ -5,7 +5,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 
 from src.Bench import Bench
-from src.utils.bench_status import get_benches
+from src.utils.bench_status import get_benches, picture_trace
 from src.utils.location import locate_normal, locate_turn
 from src.utils.overall_length import overall_length
 from src.utils.rec_overlap import is_rectangle_overlap
@@ -133,21 +133,20 @@ def solve4():
     #     if not validate():
     #         pass
 
-    cuts = []
-    for i in np.arange(0, t_limit - 2, 2):
-        print(i)
-        benches = get_benches(i, t0=t0, b=b, v=v, turning_time=turning_time, theta_turn=theta_turn,
-                              r_turn=r_turn)
-        cuts.append([benches[0].x, benches[0].y])
+    cuts = picture_trace(t_limit, t0=t0, b=b, v=v, turning_time=turning_time, theta_turn=theta_turn, r_turn=r_turn)
+    # for i in np.arange(0, t_limit - 2, 2):
+    #     benches = get_benches(i, t0=t0, b=b, v=v, turning_time=turning_time, theta_turn=theta_turn,
+    #                           r_turn=r_turn)
+    #     cuts.append([benches[0].x, benches[0].y])
 
     x_coords = [point[0] for point in cuts]
     y_coords = [point[1] for point in cuts]
-    df = pd.DataFrame({
-        'x': x_coords,
-        'y': y_coords
-    })
-    df.to_csv('dot.csv')
-
+    # # df = pd.DataFrame({
+    # #     'x': x_coords,
+    # #     'y': y_coords
+    # # })
+    # # df.to_csv('dot.csv')
+    #
     # 画折线图
     plt.figure(figsize=(8, 6))
     plt.plot(x_coords, y_coords, marker='o', linestyle='-', color='b')
@@ -158,7 +157,7 @@ def solve4():
     plt.grid(True)
     plt.show()
 
-    # benches = get_benches(t0 * 1.05, t0=t0, b=b, v=v, turning_time=turning_time, theta_turn=theta_turn, r_turn=r_turn)
+    # benches = get_benches(t0 * 1.02, t0=t0, b=b, v=v, turning_time=turning_time, theta_turn=theta_turn, r_turn=r_turn)
     # for bench in benches:
     #     print(bench.region)
     # print(benches[0])

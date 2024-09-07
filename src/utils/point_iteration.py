@@ -43,7 +43,7 @@ def point_iterate_normal(bench, b):
 def handle_region_4(bench, b):
     """处理区域四"""
     def equations(theta, x0, y0, r_circle):
-        r_spiral = b / (2 * np.pi) * (theta + np.pi)
+        r_spiral = b / (2 * np.pi) * (theta - np.pi)
         return r_spiral ** 2 - 2 * x0 * r_spiral * np.cos(theta) - 2 * y0 * r_spiral * np.sin(theta) + x0 ** 2 + y0 ** 2 - r_circle ** 2
 
     x0 = bench.x
@@ -53,7 +53,7 @@ def handle_region_4(bench, b):
     theta_range = (theta_begin, theta_begin + np.pi)
 
     theta_solution = fsolve(equations, np.array([(theta_range[0] + theta_range[1]) / 2]), args=(x0, y0, r_circle))[0]
-    r_solution = -b / (2 * np.pi) * theta_solution
+    r_solution = b / (2 * np.pi) * (theta_solution - np.pi)
     return r_solution, theta_solution
 
 
@@ -149,13 +149,13 @@ def point_iterate_turn(bench, b, break_point_r, break_point_theta):
 
     valid_2 = bench.region >= 2 and check_circle_intersection(circle_center_2_x, circle_center_2_y, break_point_r * 2 / 3, bench.x, bench.y, bench.length)
 
-    valid_3 = bench.region >= 3 and check_circle_intersection(circle_center_3_x, circle_center_3_y, break_point_r / 3, bench.x, bench.y, bench.length)
+    valid_3 = bench.region >= 3 and check_circle_intersection(circle_center_3_x, circle_center_3_y, break_point_r / 3, bench.x, bench.y, bench.length) and not valid_2
 
     valid_4 = bench.region == 4 and not valid_3
 
-    if valid_4:
-        return handle_region_4(bench, b), 4
-    elif valid_3:
+    # if valid_4:
+    #     return handle_region_4(bench, b), 4
+    if valid_3:
         res = handle_region_2_3(3, break_point_r, bench.x, bench.y, bench.length)
         if judge_theta_interval(break_point_x, break_point_y, res[0][0] - circle_center_3_x, res[0][1] - circle_center_3_y):
             return (math.sqrt(res[0][0] ** 2 + res[0][1] ** 2), np.atan2(res[0][1], res[0][0])), 3
@@ -173,6 +173,8 @@ def point_iterate_turn(bench, b, break_point_r, break_point_theta):
             return (math.sqrt(res[1][0] ** 2 + res[1][1] ** 2), np.atan2(res[1][1], res[1][0])), 2
         else:
             raise ('非法的2区域')
+    elif valid_4:
+        return handle_region_4(bench, b), 4
     else:
         return point_iterate_normal(bench, b), 1
 
