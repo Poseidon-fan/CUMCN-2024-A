@@ -27,7 +27,7 @@ def get_benches_normal(t, b, v):
     return benches
 
 
-def get_benches_turn(t, t0, b, v, turning_time, theta_turn, r_turn):
+def get_benches_turn(t, t0, b, v, turning_time, theta_turn, r_turn, cuts):
     benches = []
     first = Bench(2.86)
     if t > t0 + turning_time:
@@ -44,16 +44,17 @@ def get_benches_turn(t, t0, b, v, turning_time, theta_turn, r_turn):
 
     for i in range(222):
         next_bench = Bench(1.65)
-        iter_res = point_iterate_turn(cur_bench, b, r_turn, theta_turn)
+        iter_res = point_iterate_turn(cur_bench, b, r_turn, theta_turn, cuts)
+        # print('iter_res: ', iter_res)
         next_bench.patch(*iter_res[0])
         next_bench.region = iter_res[1]
         benches.append(next_bench)
         cur_bench = next_bench
-        print(cur_bench.region)
+        # print(cur_bench.region)
     return benches
 
 
-def get_benches(t, t0=100000, b=0.55, v=1, turning_time=None, theta_turn=None, r_turn=None):
+def get_benches(t, t0=100000, b=0.55, v=1, turning_time=None, theta_turn=None, r_turn=None, cuts=None):
     """
     获取 t 时刻的板凳状态
     t0 为设定的截止时刻，代表开始掉头
@@ -63,27 +64,31 @@ def get_benches(t, t0=100000, b=0.55, v=1, turning_time=None, theta_turn=None, r
     if t <= t0:
         return get_benches_normal(t, b, v)
     else:
-        return get_benches_turn(t, t0, b, v, turning_time, theta_turn, r_turn)
+        return get_benches_turn(t, t0, b, v, turning_time, theta_turn, r_turn, cuts)
 
 
 def picture_trace(t_limit, t0=100000, b=0.55, v=1, turning_time=None, theta_turn=None, r_turn=None):
-    """模拟第一个点走过的轨迹"""
+    """
+    模拟第一个点走过的轨迹
+    返回格式：[[点x坐标, 点y坐标, 点所处象限, 运动至此的时间], ...]
+    """
     res = []
-    for i in np.arange(0, t_limit - 1, 2):
-        print(i)
+    for i in np.arange(0, t_limit - 1, 0.5):
+        # print(i)
         if i <= t0:
             first = Bench(2.86)
             head_theta, head_r = locate_normal(i, b, v)
             first.patch(head_r, head_theta)
-            res.append([first.x, first.y])
+            res.append([first.x, first.y, 1, i])
         else:
             first = Bench(2.86)
             if i > t0 + turning_time:
                 # 头已经走出了掉头区域
                 head_theta_reverse, head_r_reverse = locate_normal(2 * t0 + turning_time - i, b, v)
                 first.patch(head_r_reverse, head_theta_reverse + np.pi)
+                res.append([first.x, first.y, 4, i])
             else:
                 ((head_x, head_y), reg) = locate_turn(r_turn, theta_turn, i - t0, v)
                 first.patch(math.sqrt(head_x ** 2 + head_y ** 2), math.atan2(head_y, head_x))
-            res.append([first.x, first.y])
+                res.append([first.x, first.y, reg, i])
     return res

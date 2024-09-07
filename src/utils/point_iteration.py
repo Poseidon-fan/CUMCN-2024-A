@@ -23,6 +23,27 @@ def judge_theta_interval(x1, y1, x2, y2):
             return True
 
 
+def point_distance(x1, y1, x2, y2):
+    return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+
+def judge_point(cuts, candidates):
+    """给定一些候选的点，判断哪个是正确的（根据时间先后性）"""
+    overall = []  # 候选点与该点的目标点的集合
+    for candidate in candidates:
+        target_point = cuts[0]
+        target_distance = point_distance(candidate[0], candidate[1], target_point[0], target_point[1])
+        for cut in cuts:
+            new_distance = point_distance(candidate[0], candidate[1], cut[0], cut[1])
+            if new_distance < target_distance:
+                target_point = cut
+                target_distance = new_distance
+        overall.append([candidate, target_point])
+    tar = min(overall, key=lambda x: x[1][3])
+    # print('candidates: ', candidates)
+    return tar[0]
+
+
+
 def point_iterate_normal(bench, b):
     """给出板凳头部的孔，以及螺距，求出板凳尾孔的坐标"""
     def equations(theta, x0, y0, r_circle):
@@ -50,7 +71,7 @@ def handle_region_4(bench, b):
     y0 = bench.y
     r_circle = bench.length
     theta_begin = bench.theta
-    theta_range = (theta_begin, theta_begin + np.pi)
+    theta_range = (theta_begin - np.pi, theta_begin)
 
     theta_solution = fsolve(equations, np.array([(theta_range[0] + theta_range[1]) / 2]), args=(x0, y0, r_circle))[0]
     r_solution = b / (2 * np.pi) * (theta_solution - np.pi)
@@ -129,8 +150,9 @@ def check_circle_intersection(x1, y1, r1, x2, y2, r2):
         return False  # 未知情况，通常不会出现
 
 
-def point_iterate_turn(bench, b, break_point_r, break_point_theta):
+def point_iterate_turn(bench, b, break_point_r, break_point_theta, cuts):
     """
+    :param cuts: 散点
     :param bench: 板凳头
     :param b: 螺距
     :param break_point_r: 转换点的极径
@@ -147,36 +169,61 @@ def point_iterate_turn(bench, b, break_point_r, break_point_theta):
     circle_center_3_x = -break_point_r * 2 / 3 * math.cos(break_point_theta)
     circle_center_3_y = -break_point_r * 2 / 3 * math.sin(break_point_theta)
 
-    valid_2 = bench.region >= 2 and check_circle_intersection(circle_center_2_x, circle_center_2_y, break_point_r * 2 / 3, bench.x, bench.y, bench.length)
+    valid_1 = bench.region <= 2
 
-    valid_3 = bench.region >= 3 and check_circle_intersection(circle_center_3_x, circle_center_3_y, break_point_r / 3, bench.x, bench.y, bench.length) and not valid_2
+    valid_2 = (bench.region == 2 or bench.region == 3) and check_circle_intersection(circle_center_2_x, circle_center_2_y, break_point_r * 2 / 3, bench.x, bench.y, bench.length)
 
-    valid_4 = bench.region == 4 and not valid_3
+    valid_3 = bench.region >= 3 and check_circle_intersection(circle_center_3_x, circle_center_3_y, break_point_r / 3, bench.x, bench.y, bench.length)
+
+    valid_4 = bench.region == 4
 
     # if valid_4:
     #     return handle_region_4(bench, b), 4
+    # if valid_3:
+    #     res = handle_region_2_3(3, break_point_r, bench.x, bench.y, bench.length)
+    #     if judge_theta_interval(break_point_x, break_point_y, res[0][0] - circle_center_3_x, res[0][1] - circle_center_3_y):
+    #         return (math.sqrt(res[0][0] ** 2 + res[0][1] ** 2), np.atan2(res[0][1], res[0][0])), 3
+    #     elif judge_theta_interval(break_point_x, break_point_y, res[1][0] - circle_center_3_x, res[1][1] - circle_center_3_y):
+    #         return (math.sqrt(res[1][0] ** 2 + res[1][1] ** 2), np.atan2(res[1][1], res[1][0])), 3
+    #     else:
+    #         raise ('非法的3区域')
+    # elif valid_2:
+    #     res = handle_region_2_3(2, break_point_r, bench.x, bench.y, bench.length)
+    #     if judge_theta_interval(break_point_x, break_point_y, res[0][0] - circle_center_2_x,
+    #                             res[0][1] - circle_center_2_y):
+    #         return (math.sqrt(res[0][0] ** 2 + res[0][1] ** 2), np.atan2(res[0][1], res[0][0])), 2
+    #     elif judge_theta_interval(break_point_x, break_point_y, res[1][0] - circle_center_2_x,
+    #                               res[1][1] - circle_center_2_y):
+    #         return (math.sqrt(res[1][0] ** 2 + res[1][1] ** 2), np.atan2(res[1][1], res[1][0])), 2
+    #     else:
+    #         raise ('非法的2区域')
+    # elif valid_4:
+    #     return handle_region_4(bench, b), 4
+    # else:
+    #     return point_iterate_normal(bench, b), 1
+    candidates = []
+    if valid_4:
+        r, theta = handle_region_4(bench, b)
+        candidates.append([r * math.cos(float(theta)), r * math.sin(float(theta)), 4])
     if valid_3:
         res = handle_region_2_3(3, break_point_r, bench.x, bench.y, bench.length)
-        if judge_theta_interval(break_point_x, break_point_y, res[0][0] - circle_center_3_x, res[0][1] - circle_center_3_y):
-            return (math.sqrt(res[0][0] ** 2 + res[0][1] ** 2), np.atan2(res[0][1], res[0][0])), 3
-        elif judge_theta_interval(break_point_x, break_point_y, res[1][0] - circle_center_3_x, res[1][1] - circle_center_3_y):
-            return (math.sqrt(res[1][0] ** 2 + res[1][1] ** 2), np.atan2(res[1][1], res[1][0])), 3
-        else:
-            raise ('非法的3区域')
-    elif valid_2:
+        if res and judge_theta_interval(break_point_x, break_point_y, res[0][0] - circle_center_3_x, res[0][1] - circle_center_3_y):
+            candidates.append([res[0][0], res[0][1], 3])
+        if res and len(res) >= 2 and judge_theta_interval(break_point_x, break_point_y, res[1][0] - circle_center_3_x, res[1][1] - circle_center_3_y):
+            candidates.append([res[1][0], res[1][1], 3])
+    if valid_2:
         res = handle_region_2_3(2, break_point_r, bench.x, bench.y, bench.length)
-        if judge_theta_interval(break_point_x, break_point_y, res[0][0] - circle_center_2_x,
-                                res[0][1] - circle_center_2_y):
-            return (math.sqrt(res[0][0] ** 2 + res[0][1] ** 2), np.atan2(res[0][1], res[0][0])), 2
-        elif judge_theta_interval(break_point_x, break_point_y, res[1][0] - circle_center_2_x,
-                                  res[1][1] - circle_center_2_y):
-            return (math.sqrt(res[1][0] ** 2 + res[1][1] ** 2), np.atan2(res[1][1], res[1][0])), 2
-        else:
-            raise ('非法的2区域')
-    elif valid_4:
-        return handle_region_4(bench, b), 4
-    else:
-        return point_iterate_normal(bench, b), 1
+        if res and judge_theta_interval(break_point_x, break_point_y, res[0][0] - circle_center_2_x, res[0][1] - circle_center_2_y):
+            candidates.append([res[0][0], res[0][1], 2])
+        if res and len(res) >= 2 and judge_theta_interval(break_point_x, break_point_y, res[1][0] - circle_center_2_x, res[1][1] - circle_center_2_y):
+            candidates.append([res[1][0], res[1][1], 2])
+
+    if valid_1:
+        r, theta = point_iterate_normal(bench, b)
+        candidates.append([r * math.cos(float(theta)), r * math.sin(float(theta)), 1])
+
+    tar = judge_point(cuts, candidates)
+    return (math.sqrt(float(tar[0]) ** 2 + float(tar[1]) ** 2 ), np.atan2(float(tar[1]), float(tar[0]))), tar[2]
 
 
 if __name__ == '__main__':

@@ -8,6 +8,7 @@ from src.Bench import Bench
 from src.utils.bench_status import get_benches, picture_trace
 from src.utils.location import locate_normal, locate_turn
 from src.utils.overall_length import overall_length
+from src.utils.point_iteration import judge_point
 from src.utils.rec_overlap import is_rectangle_overlap
 from src.utils.rec_transform import get_rectangle_vertices
 from src.utils.visualization import scatter, line
@@ -127,41 +128,45 @@ def solve4():
     turning_length = np.pi * r_turn  # 掉头空间内走的路径长度
     turning_time = turning_length / v  # 掉头空间内走的时间
     t_limit = t0 * 2 + turning_time  # 整个龙走出的时间
+    cuts = picture_trace(t_limit, t0=t0, b=b, v=v, turning_time=turning_time, theta_turn=theta_turn, r_turn=r_turn)
+
+
 
     # for t in np.arange(t0, t_limit, 0.1):
     #     benches = get_benches(t, t0=t0, b=b, v=v, turning_time=turning_time)
     #     if not validate():
     #         pass
 
-    cuts = picture_trace(t_limit, t0=t0, b=b, v=v, turning_time=turning_time, theta_turn=theta_turn, r_turn=r_turn)
     # for i in np.arange(0, t_limit - 2, 2):
     #     benches = get_benches(i, t0=t0, b=b, v=v, turning_time=turning_time, theta_turn=theta_turn,
     #                           r_turn=r_turn)
     #     cuts.append([benches[0].x, benches[0].y])
 
-    x_coords = [point[0] for point in cuts]
-    y_coords = [point[1] for point in cuts]
+    # x_coords = [point[0] for point in cuts]
+    # y_coords = [point[1] for point in cuts]
     # # df = pd.DataFrame({
     # #     'x': x_coords,
     # #     'y': y_coords
     # # })
     # # df.to_csv('dot.csv')
     #
-    # 画折线图
-    plt.figure(figsize=(8, 6))
-    plt.plot(x_coords, y_coords, marker='o', linestyle='-', color='b')
-    plt.title("Line Plot of Given Points")
-    plt.xlabel("X Coordinate")
-    plt.ylabel("Y Coordinate")
-    plt.axis('equal')
-    plt.grid(True)
-    plt.show()
+    # # 画折线图
+    # plt.figure(figsize=(8, 6))
+    # plt.plot(x_coords, y_coords, marker='o', linestyle='-', color='b')
+    # plt.title("Line Plot of Given Points")
+    # plt.xlabel("X Coordinate")
+    # plt.ylabel("Y Coordinate")
+    # plt.axis('equal')
+    # plt.grid(True)
+    # plt.show()
 
-    # benches = get_benches(t0 * 1.02, t0=t0, b=b, v=v, turning_time=turning_time, theta_turn=theta_turn, r_turn=r_turn)
+    benches = get_benches(t0 * 1.5, t0=t0, b=b, v=v, turning_time=turning_time, theta_turn=theta_turn, r_turn=r_turn, cuts=cuts)
+    # for bench in benches:
+    #     print(bench)
     # for bench in benches:
     #     print(bench.region)
     # print(benches[0])
-    # line(benches)
+    line(benches[0:10])
 
 
 if __name__ == '__main__':
