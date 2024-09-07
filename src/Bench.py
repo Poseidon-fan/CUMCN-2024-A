@@ -10,6 +10,7 @@ class Bench:
         self.x = 0  # 扳手头横坐标
         self.y = 0  # 扳手头纵坐标
         self.speed = 1  # 扳手头部速度
+        self.region = 0  # 所属区域  1 2 3 4
 
     def patch(self, r, theta):
         self.r = r

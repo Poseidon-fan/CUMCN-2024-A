@@ -3,6 +3,7 @@ import math
 import numpy as np
 
 from src.utils.bench_status import get_benches
+from src.utils.location import locate_normal
 from src.utils.overall_length import overall_length
 from src.utils.rec_overlap import is_rectangle_overlap
 from src.utils.rec_transform import get_rectangle_vertices
@@ -115,8 +116,23 @@ def solve3():
 
 
 def solve4():
-    pass
+    global benches, b
+    b = 1.7
+    v = 1  # 该问中速度恒为1
+    t0 = 1700  # todo 开始掉头的时刻，当做外层循环变量，后面要循环
+    theta_turn, r_turn = locate_normal(t0, b)  # 掉头时刻的极角与极径（掉头圆的半径）
+    turning_length = np.pi * r_turn  # 掉头空间内走的路径长度
+    turning_time = turning_length / v  # 掉头空间内走的时间
+    t_limit = t0 * 2 + turning_time  # 整个龙走出的时间
+
+    # for t in np.arange(t0, t_limit, 0.1):
+    #     benches = get_benches(t, t0=t0, b=b, v=v, turning_time=turning_time)
+    #     if not validate():
+    #         pass
+    benches = get_benches(t0 * 1.01, t0=t0, b=b, v=v, turning_time=turning_time, theta_turn=theta_turn, r_turn=r_turn)
+    print(benches[0])
+    scatter(benches)
 
 
 if __name__ == '__main__':
-    solve3()
+    solve4()
