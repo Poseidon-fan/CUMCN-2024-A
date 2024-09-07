@@ -2,6 +2,7 @@ import math
 
 import numpy as np
 from scipy.integrate import quad
+from scipy.optimize import fsolve
 
 
 # 定义计算弧长微分函数
@@ -23,7 +24,6 @@ def position_after_time(k, v, t, theta_0):
         return arc_length - target_arc_length
 
     # 使用数值方法求解目标弧长对应的theta
-    from scipy.optimize import fsolve
     theta_t = fsolve(find_theta_for_arc_length, theta_0, args=(k, target_arc_length))[0]
 
     # 计算对应的极径r(t)
@@ -82,9 +82,9 @@ def locate_turn(r0, theta, t, v):
     c2_center = 1 / 6 * x1 + 5 / 6 * x2, 1 / 6 * y1 + 5 / 6 * y2
     c2_start = 1/3*x1+2/3*x2, 1/3*y1+2/3*y2
     if (v * t <= math.pi * c1_r):
-        return get_point_on_circle(c1_center, c1_r, c1, v * t , is_shun=True)
+        return get_point_on_circle(c1_center, c1_r, c1, v * t , is_shun=True), 2
     elif (v * t > math.pi * c1_r) and (v * t <= math.pi * c1_r + math.pi * c2_r):
-        return get_point_on_circle(c2_center, c2_r, c2_start, v * t - math.pi * c1_r, is_shun=False)
+        return get_point_on_circle(c2_center, c2_r, c2_start, v * t - math.pi * c1_r, is_shun=False), 3
     else:
         raise("传入参数长度超过圆周长")
 

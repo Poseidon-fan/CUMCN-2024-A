@@ -32,9 +32,11 @@ def get_benches_turn(t, t0, b, v, turning_time, theta_turn, r_turn):
         # 头已经走出了掉头区域
         head_theta_reverse, head_r_reverse = locate_normal(2 * t0 + turning_time - t, b, v)
         first.patch(head_r_reverse, -head_theta_reverse)
+        first.region = 4
     else:
-        head_x, head_y = locate_turn(r_turn, theta_turn, t, v)
+        ((head_x, head_y), reg) = locate_turn(r_turn, theta_turn, t - t0, v)
         first.patch(math.sqrt(head_x ** 2 + head_y ** 2), math.atan2(head_y, head_x))
+        first.region = reg
     benches.append(first)
     cur_bench = first
 
@@ -45,6 +47,7 @@ def get_benches_turn(t, t0, b, v, turning_time, theta_turn, r_turn):
         next_bench.region = iter_res[1]
         benches.append(next_bench)
         cur_bench = next_bench
+        print(cur_bench.region)
     return benches
 
 
