@@ -160,13 +160,16 @@ def solve4():
     # plt.grid(True)
     # plt.show()
 
-    benches = get_benches(t0 * 1.5, t0=t0, b=b, v=v, turning_time=turning_time, theta_turn=theta_turn, r_turn=r_turn, cuts=cuts)
+    benches = get_benches(t0 * 1.03, t0=t0, b=b, v=v, turning_time=turning_time, theta_turn=theta_turn, r_turn=r_turn, cuts=cuts)
     # for bench in benches:
     #     print(bench)
     # for bench in benches:
     #     print(bench.region)
     # print(benches[0])
-    line(benches[0:10])
+
+    for bench in benches:
+        print(bench)
+    line(benches)
 
 
 if __name__ == '__main__':

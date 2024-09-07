@@ -213,9 +213,9 @@ def point_iterate_turn(bench, b, break_point_r, break_point_theta, cuts):
             candidates.append([res[1][0], res[1][1], 3])
     if valid_2:
         res = handle_region_2_3(2, break_point_r, bench.x, bench.y, bench.length)
-        if res and judge_theta_interval(break_point_x, break_point_y, res[0][0] - circle_center_2_x, res[0][1] - circle_center_2_y):
+        if res and not judge_theta_interval(break_point_x, break_point_y, res[0][0] - circle_center_2_x, res[0][1] - circle_center_2_y):
             candidates.append([res[0][0], res[0][1], 2])
-        if res and len(res) >= 2 and judge_theta_interval(break_point_x, break_point_y, res[1][0] - circle_center_2_x, res[1][1] - circle_center_2_y):
+        if res and len(res) >= 2 and not judge_theta_interval(break_point_x, break_point_y, res[1][0] - circle_center_2_x, res[1][1] - circle_center_2_y):
             candidates.append([res[1][0], res[1][1], 2])
 
     if valid_1:
@@ -223,7 +223,10 @@ def point_iterate_turn(bench, b, break_point_r, break_point_theta, cuts):
         candidates.append([r * math.cos(float(theta)), r * math.sin(float(theta)), 1])
 
     tar = judge_point(cuts, candidates)
-    return (math.sqrt(float(tar[0]) ** 2 + float(tar[1]) ** 2 ), np.atan2(float(tar[1]), float(tar[0]))), tar[2]
+    theta_res = np.atan2(float(tar[1]), float(tar[0]))
+    if tar[2] == 4:
+        theta_res = math.sqrt(float(tar[0]) ** 2 + float(tar[1]) ** 2) / (b / 2 / np.pi) + np.pi
+    return (math.sqrt(float(tar[0]) ** 2 + float(tar[1]) ** 2), theta_res), tar[2]
 
 
 if __name__ == '__main__':

@@ -19,4 +19,4 @@ class Bench:
         self.y = math.sin(theta) * r
 
     def __str__(self):
-        return '极坐标: [' + str(self.r) + ', ' + str(self.theta) + '] ' + '直角坐标: [' + str(self.x) + ',' + str(self.y) + ']'
+        return '直角坐标: [' + str(self.x) + ',' + str(self.y) + ' 区域: ' + str(self.region) + ' ]'
