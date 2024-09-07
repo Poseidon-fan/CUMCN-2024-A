@@ -43,7 +43,7 @@ def point_iterate_normal(bench, b):
 def handle_region_4(bench, b):
     """处理区域四"""
     def equations(theta, x0, y0, r_circle):
-        r_spiral = -b / (2 * np.pi) * theta
+        r_spiral = b / (2 * np.pi) * (theta + np.pi)
         return r_spiral ** 2 - 2 * x0 * r_spiral * np.cos(theta) - 2 * y0 * r_spiral * np.sin(theta) + x0 ** 2 + y0 ** 2 - r_circle ** 2
 
     x0 = bench.x
