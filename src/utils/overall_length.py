@@ -1,11 +1,9 @@
 import numpy as np
 from scipy.integrate import quad
 
-import src.utils.common as common
 
-
-def overall_length():
-    k = common.b / 2 / np.pi
+def overall_length(b=0.55):
+    k = b / 2 / np.pi
     def integrand(theta):
         return np.sqrt((k * theta) ** 2 + k ** 2)
 
@@ -14,4 +12,5 @@ def overall_length():
     return length
 
 
-
+if __name__ == '__main__':
+    print(overall_length(0.45))
