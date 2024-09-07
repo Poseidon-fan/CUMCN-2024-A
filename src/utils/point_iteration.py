@@ -142,10 +142,10 @@ def point_iterate_turn(bench, b, break_point_r, break_point_theta):
     break_point_y = break_point_r * math.sin(break_point_theta)
 
     # 区域二、三圆心的位置
-    circle_center_2_x = break_point_r * 2 / 3 * math.cos(break_point_theta)
-    circle_center_2_y = break_point_r * 2 / 3 * math.sin(break_point_theta)
-    circle_center_3_x = -break_point_r / 3 * math.cos(break_point_theta)
-    circle_center_3_y = -break_point_r / 3 * math.sin(break_point_theta)
+    circle_center_2_x = break_point_r / 3 * math.cos(break_point_theta)
+    circle_center_2_y = break_point_r / 3 * math.sin(break_point_theta)
+    circle_center_3_x = -break_point_r * 2 / 3 * math.cos(break_point_theta)
+    circle_center_3_y = -break_point_r * 2 / 3 * math.sin(break_point_theta)
 
     valid_2 = bench.region >= 2 and check_circle_intersection(circle_center_2_x, circle_center_2_y, break_point_r * 2 / 3, bench.x, bench.y, bench.length)
 

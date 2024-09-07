@@ -129,7 +129,7 @@ def solve4():
     #     benches = get_benches(t, t0=t0, b=b, v=v, turning_time=turning_time)
     #     if not validate():
     #         pass
-    benches = get_benches(t0 * 1.2, t0=t0, b=b, v=v, turning_time=turning_time, theta_turn=theta_turn, r_turn=r_turn)
+    benches = get_benches(t0 * 1.05, t0=t0, b=b, v=v, turning_time=turning_time, theta_turn=theta_turn, r_turn=r_turn)
     # for bench in benches:
     #     print(bench.region)
     # print(benches[0])
