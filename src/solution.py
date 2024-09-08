@@ -10,6 +10,7 @@ from src.utils.location import locate_normal
 from src.utils.overall_length import overall_length
 from src.utils.rec_overlap import is_rectangle_overlap
 from src.utils.rec_transform import get_rectangle_vertices
+from src.utils.speed import get_benches_speed
 from src.utils.visualization import line, serializer
 
 BENCH_WIDTH = 0.3  # 板凳宽
@@ -46,6 +47,16 @@ def validate():
             return False
 
     return True
+
+
+def solve1():
+    global benches
+    for i in range(301):
+        benches = get_benches(i)
+        get_benches_speed(1, benches, None, None, 0.55)
+        for bench in benches:
+            print(bench.region, bench.speed)
+        break
 
 
 def solve2():
@@ -173,5 +184,5 @@ def solve4():
 
 
 if __name__ == '__main__':
-    solve4()
+    solve1()
 
