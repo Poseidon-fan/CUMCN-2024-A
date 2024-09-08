@@ -1,5 +1,6 @@
 import math
 
+import matplotlib
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
@@ -160,15 +161,15 @@ def solve4():
 
     # benches = get_benches(t0 + 2, t0=t0, b=b, v=v, turning_time=turning_time, theta_turn=theta_turn, r_turn=r_turn, cuts=cuts)
     exc = []
-    for i in range(30, 50):
+    for i in range(-10, 101):
         try:
             benches = get_benches(t0 + i, t0=t0, b=b, v=v, turning_time=turning_time, theta_turn=theta_turn, r_turn=r_turn, cuts=cuts)
             line(benches)
+
         except Exception as e:
             print('Wrong!!!', i)
             exc.append(i)
     print(exc)
-
 
 
 if __name__ == '__main__':
