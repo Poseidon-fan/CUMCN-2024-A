@@ -1,17 +1,15 @@
 import math
 
 import numpy as np
-import pandas as pd
 from matplotlib import pyplot as plt
+from matplotlib.animation import FuncAnimation
 
-from src.Bench import Bench
 from src.utils.bench_status import get_benches, picture_trace
-from src.utils.location import locate_normal, locate_turn
+from src.utils.location import locate_normal
 from src.utils.overall_length import overall_length
-from src.utils.point_iteration import judge_point
 from src.utils.rec_overlap import is_rectangle_overlap
 from src.utils.rec_transform import get_rectangle_vertices
-from src.utils.visualization import scatter, line
+from src.utils.visualization import line, serializer
 
 BENCH_WIDTH = 0.3  # 板凳宽
 HEAD_DISTANCE = 0.275  # 孔到头部距离
@@ -123,7 +121,7 @@ def solve4():
     global benches, b
     b = 1.7
     v = 1  # 该问中速度恒为1
-    t0 = 1330  # todo 开始掉头的时刻，当做外层循环变量，后面要循环
+    t0 = 1333.35  # todo 开始掉头的时刻，当做外层循环变量，后面要循环
     theta_turn, r_turn = locate_normal(t0, b)  # 掉头时刻的极角与极径（掉头圆的半径）
     turning_length = np.pi * r_turn  # 掉头空间内走的路径长度
     turning_time = turning_length / v  # 掉头空间内走的时间
@@ -160,12 +158,19 @@ def solve4():
     # plt.grid(True)
     # plt.show()
 
-    benches = get_benches(t0 * 1.03, t0=t0, b=b, v=v, turning_time=turning_time, theta_turn=theta_turn, r_turn=r_turn, cuts=cuts)
-    for bench in benches:
-        print(bench)
+    # benches = get_benches(t0 + 2, t0=t0, b=b, v=v, turning_time=turning_time, theta_turn=theta_turn, r_turn=r_turn, cuts=cuts)
+    exc = []
+    for i in range(30, 50):
+        try:
+            benches = get_benches(t0 + i, t0=t0, b=b, v=v, turning_time=turning_time, theta_turn=theta_turn, r_turn=r_turn, cuts=cuts)
+            line(benches)
+        except Exception as e:
+            print('Wrong!!!', i)
+            exc.append(i)
+    print(exc)
 
-    line(benches)
 
 
 if __name__ == '__main__':
     solve4()
+

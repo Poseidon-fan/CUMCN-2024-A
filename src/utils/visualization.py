@@ -32,6 +32,15 @@ def line(benches):
     plt.ylabel('Y-axis')
     plt.show()
 
+def serializer(benches):
+    x = []
+    y = []
+    for bench in benches:
+        x.append(float(bench.x))
+        y.append(float(bench.y))
+    return x, y
+
+
 if __name__ == '__main__':
     benches = get_benches(300)
     scatter(benches)

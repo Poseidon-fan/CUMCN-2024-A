@@ -29,10 +29,12 @@ def judge_theta_interval(x1, y1, x2, y2):
 def point_distance(x1, y1, x2, y2):
     return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 
-def judge_point(cuts, candidates):
+def judge_point(cuts, candidates, cur_region):
     """给定一些候选的点，判断哪个是正确的（根据时间先后性）"""
     overall = []  # 候选点与该点的目标点的集合
     for candidate in candidates:
+        if candidate[2] > cur_region:
+            continue
         target_point = cuts[0]
         target_distance = point_distance(candidate[0], candidate[1], target_point[0], target_point[1])
         for cut in cuts:
@@ -41,6 +43,8 @@ def judge_point(cuts, candidates):
                 target_point = cut
                 target_distance = new_distance
         overall.append([candidate, target_point])
+
+
     tar = min(overall, key=lambda x: x[1][3])
     if len(overall) == 2 and math.fabs(overall[0][1][3] -overall[1][1][3]) < 1e-3:
         if overall[0][0][2] == 1:
@@ -240,7 +244,16 @@ def point_iterate_turn(bench, b, break_point_r, break_point_theta, cuts):
         # if 0.9 < math.sqrt((bench.x - r * math.cos(float(theta))) ** 2 + (bench.y - r * math.sin(float(theta))) ** 2) / bench.length < 1.1:
         candidates.append([r * math.cos(float(theta)), r * math.sin(float(theta)), 1])
 
-    tar = judge_point(cuts, candidates)
+    if len(candidates) == 0:
+        if bench.region == 2:
+            margin = True
+            theta0 = break_point_theta
+        else:
+            margin = False
+        r, theta = point_iterate_normal(bench, b)
+        candidates.append([r * math.cos(float(theta)), r * math.sin(float(theta)), 1])
+
+    tar = judge_point(cuts, candidates, bench.region)
     theta_res = np.atan2(float(tar[1]), float(tar[0]))
     if tar[2] == 1:
         theta_res = 2 * np.pi * math.sqrt(float(tar[0]) ** 2 + float(tar[1]) ** 2) / b
