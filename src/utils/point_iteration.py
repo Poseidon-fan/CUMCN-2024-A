@@ -58,7 +58,7 @@ def judge_point(cuts, candidates, cur_region, bench_x, bench_y):
         if item[1][3] >= bench_time:
             overall.remove(item)
 
-    tar = min(overall, key=lambda x: x[1][3])
+    tar = max(overall, key=lambda x: x[1][3])
     if len(overall) == 2 and math.fabs(overall[0][1][3] -overall[1][1][3]) < 1e-3:
         if overall[0][0][2] == 1:
             tar = overall[0]
@@ -66,7 +66,6 @@ def judge_point(cuts, candidates, cur_region, bench_x, bench_y):
             tar = overall[1]
     # print('candidates: ', candidates, 'most_recent: ', [item[1] for item in overall])
     return tar[0]
-
 
 
 def point_iterate_normal(bench, b):

@@ -212,7 +212,7 @@ def solve4():
     exc = []
     speeds = []
     locations = []
-    for i in range(-50, -49):
+    for i in range(90, 100):
         print(i)
         try:
             cur_speed = []
@@ -227,19 +227,19 @@ def solve4():
             speeds.append(cur_speed)
             locations.append(cur_location)
 
-            targets = []  # 记录所有的板凳的坐标
-            for i in range(221):  # 这里直接设死了
-                cur_bench = benches[i]
-                next_bench = benches[i + 1]
-                x0 = (cur_bench.x + next_bench.x) / 2
-                y0 = (cur_bench.y + next_bench.y) / 2
-                length = cur_bench.length + 2 * HEAD_DISTANCE
-                width = BENCH_WIDTH
-                k = (cur_bench.y - next_bench.y) / (cur_bench.x - next_bench.x)
-
-                targets.append(get_rectangle_vertices(x0, y0, length, width, k))
-
-            rec(targets)
+            # targets = []  # 记录所有的板凳的坐标
+            # for i in range(222):  # 这里直接设死了
+            #     cur_bench = benches[i]
+            #     next_bench = benches[i + 1]
+            #     x0 = (cur_bench.x + next_bench.x) / 2
+            #     y0 = (cur_bench.y + next_bench.y) / 2
+            #     length = cur_bench.length + 2 * HEAD_DISTANCE
+            #     width = BENCH_WIDTH
+            #     k = (cur_bench.y - next_bench.y) / (cur_bench.x - next_bench.x)
+            #
+            #     targets.append(get_rectangle_vertices(x0, y0, length, width, k))
+            #
+            # rec(targets)
 
         except Exception as e:
             print('Wrong!!!', i)
@@ -249,6 +249,17 @@ def solve4():
     df_location.to_excel('res4_locations.xlsx', index=False, header=False)
     df_speed.to_excel('res4_speeds.xlsx', index=False, header=False)
     print(exc)
+
+
+def solve5():
+    b = 1.7
+    t0 = 1333.35  # todo 开始掉头的时刻，当做外层循环变量，后面要循环
+    theta_turn, r_turn = locate_normal(t0, b)  # 掉头时刻的极角与极径（掉头圆的半径）
+    turning_length = np.pi * r_turn  # 掉头空间内走的路径长度
+    for v in np.arange(1.0, 2.0, 0.01):
+        turning_time = turning_length / v  # 掉头空间内走的时间
+        t_limit = t0 * 2 + turning_time  # 整个龙走出的时间
+        cuts = picture_trace(t_limit, t0=t0, b=b, v=v, turning_time=turning_time, theta_turn=theta_turn, r_turn=r_turn)
 
 
 if __name__ == '__main__':
