@@ -15,7 +15,7 @@ def get_benches_normal(t, b, v):
     benches.append(first)
 
     cur_bench = first
-    for i in range(222):
+    for i in range(223):
         next_bench = Bench(1.65)
         next_bench.patch(*point_iterate_normal(cur_bench, b))
         benches.append(next_bench)
@@ -42,7 +42,7 @@ def get_benches_turn(t, t0, b, v, turning_time, theta_turn, r_turn, cuts):
     benches.append(first)
     cur_bench = first
 
-    for i in range(222):
+    for i in range(223):
         next_bench = Bench(1.65)
         iter_res = point_iterate_turn(cur_bench, b, r_turn, theta_turn, cuts)
         # print('iter_res: ', iter_res)

@@ -1,26 +1,17 @@
-import matplotlib.pyplot as plt
-import numpy as np
-from matplotlib.animation import FuncAnimation
+import pandas as pd
 
-# 假设这是你封装的函数，用于生成折线图数据
-def my_line(n):
-    x = np.linspace(0, 10, 100)
-    y = np.sin(x + n / 10.0)  # 根据传入的整数n变化生成不同的曲线
-    return x, y
+# 假设你的二维列表如下
+data = [
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9]
+]
 
-# 创建画布
-fig, ax = plt.subplots()
-xdata, ydata = my_line(0)  # 初始化时的曲线
-line, = ax.plot(xdata, ydata)
+# 将二维列表转换为DataFrame
+df = pd.DataFrame(data)
 
-# 更新函数，用于更新折线图
-def update(frame):
-    x, y = my_line(frame)
-    line.set_data(x, y)
-    return line,
+# 对DataFrame进行转置操作，使行变为列
+df_transposed = df.transpose()
 
-# 创建动画，frames表示整数从0到100，interval表示每帧之间的间隔时间（毫秒）
-ani = FuncAnimation(fig, update, frames=range(100), interval=100, blit=True)
-
-# 显示动画
-plt.show()  # 这行会启动动画显示
+# 将转置后的DataFrame导出为xlsx文件
+df_transposed.to_excel("output.xlsx", index=False, header=False)

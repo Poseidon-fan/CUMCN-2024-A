@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from matplotlib.patches import Polygon
 
 from src.utils.bench_status import get_benches
 
@@ -39,6 +40,25 @@ def serializer(benches):
         x.append(float(bench.x))
         y.append(float(bench.y))
     return x, y
+
+
+def rec(rectangles):
+    fig, ax = plt.subplots()
+
+    # 遍历每个矩形
+    for rect in rectangles:
+        # 使用 Polygon 将矩形绘制出来
+        polygon = Polygon(rect, closed=True, edgecolor='blue', fill=None)
+        ax.add_patch(polygon)
+
+    # 设置轴的范围和比例
+    ax.set_xlim(-20, 20)
+    ax.set_ylim(-20, 20)
+    ax.set_aspect('equal', adjustable='box')
+
+    # 显示图形
+    plt.savefig('rec.png')
+    plt.show()
 
 
 if __name__ == '__main__':

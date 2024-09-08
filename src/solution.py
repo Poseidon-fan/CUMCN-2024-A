@@ -2,6 +2,7 @@ import math
 
 import matplotlib
 import numpy as np
+import pandas as pd
 from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
 
@@ -11,7 +12,7 @@ from src.utils.overall_length import overall_length
 from src.utils.rec_overlap import is_rectangle_overlap
 from src.utils.rec_transform import get_rectangle_vertices
 from src.utils.speed import get_benches_speed
-from src.utils.visualization import line, serializer
+from src.utils.visualization import line, serializer, rec, scatter
 
 BENCH_WIDTH = 0.3  # 板凳宽
 HEAD_DISTANCE = 0.275  # 孔到头部距离
@@ -51,34 +52,71 @@ def validate():
 
 def solve1():
     global benches
+    speeds = []
+    locations = []
     for i in range(301):
+        cur_speed = []
+        cur_location = []
         benches = get_benches(i)
         get_benches_speed(1, benches, None, None, 0.55)
-        for bench in benches:
-            print(bench.region, bench.speed)
-        break
 
+        for bench in benches:
+            if bench.theta > 32 * np.pi:
+                cur_location.append(11111)
+                cur_location.append(11111)
+                cur_speed.append(11111)
+            else:
+                cur_speed.append(bench.speed)
+                cur_location.append(bench.x)
+                cur_location.append(bench.y)
+        speeds.append(cur_speed)
+        locations.append(cur_location)
+
+
+    df_location = pd.DataFrame(locations).round(6).transpose()
+    df_speed = pd.DataFrame(speeds).round(6).transpose()
+    df_location.to_excel('res1_locations.xlsx', index=False, header=False)
+    df_speed.to_excel('res2_speeds.xlsx', index=False, header=False)
 
 def solve2():
     global benches
-    # left = 10
-    # right = int(overall_length())
+    # limits = []
+    # for i in np.arange(412, 413, 0.001):
+    #     print(i)
+    #     benches = get_benches(i)
     #
-    # while right - left > 1e-6:
-    #     middle = (left + right) / 2
-    #     benches = get_benches(middle)
-    #     if validate():
-    #         left = middle
-    #     else:
-    #         right = middle
-    # print(left)
+    #     if not validate():
+    #         limits.append(i)
+    # print('limits: ', limits)
+
+    # t_limit = limits[0]
+    t_limit = 412.4739999999888
     res = []
-    for i in np.arange(412, 413, 0.001):
-        print(i)
-        benches = get_benches(i)
-        if not validate():
-            res.append(i)
-    print(res)
+    benches = get_benches(t_limit)
+    get_benches_speed(1, benches, None, None, 0.55)
+
+    scatter(benches)
+    line(benches)
+    targets = []  # 记录所有的板凳的坐标
+    for i in range(222):  # 这里直接设死了
+        cur_bench = benches[i]
+        next_bench = benches[i + 1]
+        x0 = (cur_bench.x + next_bench.x) / 2
+        y0 = (cur_bench.y + next_bench.y) / 2
+        length = cur_bench.length + 2 * HEAD_DISTANCE
+        width = BENCH_WIDTH
+        k = (cur_bench.y - next_bench.y) / (cur_bench.x - next_bench.x)
+
+        targets.append(get_rectangle_vertices(x0, y0, length, width, k))
+
+    rec(targets)
+
+    for bench in benches:
+        res.append([bench.x, bench.y, bench.speed])
+    df = pd.DataFrame(res)
+    df.to_excel('res2.xlsx', index=False, header=False)
+
+
 
 def solve3():
     global b, benches
@@ -172,17 +210,63 @@ def solve4():
 
     # benches = get_benches(t0 + 2, t0=t0, b=b, v=v, turning_time=turning_time, theta_turn=theta_turn, r_turn=r_turn, cuts=cuts)
     exc = []
-    for i in range(-10, 101):
+    speeds = []
+    locations = []
+    for i in range(-50, -49):
+        print(i)
         try:
+            cur_speed = []
+            cur_location = []
             benches = get_benches(t0 + i, t0=t0, b=b, v=v, turning_time=turning_time, theta_turn=theta_turn, r_turn=r_turn, cuts=cuts)
-            line(benches)
+            get_benches_speed(v, benches, r_turn, theta_turn, b)
+
+            for bench in benches:
+                cur_speed.append(bench.speed)
+                cur_location.append(bench.x)
+                cur_location.append(bench.y)
+            speeds.append(cur_speed)
+            locations.append(cur_location)
+
+            targets = []  # 记录所有的板凳的坐标
+            for i in range(221):  # 这里直接设死了
+                cur_bench = benches[i]
+                next_bench = benches[i + 1]
+                x0 = (cur_bench.x + next_bench.x) / 2
+                y0 = (cur_bench.y + next_bench.y) / 2
+                length = cur_bench.length + 2 * HEAD_DISTANCE
+                width = BENCH_WIDTH
+                k = (cur_bench.y - next_bench.y) / (cur_bench.x - next_bench.x)
+
+                targets.append(get_rectangle_vertices(x0, y0, length, width, k))
+
+            rec(targets)
 
         except Exception as e:
             print('Wrong!!!', i)
             exc.append(i)
+    df_location = pd.DataFrame(locations).round(6).transpose()
+    df_speed = pd.DataFrame(speeds).round(6).transpose()
+    df_location.to_excel('res4_locations.xlsx', index=False, header=False)
+    df_speed.to_excel('res4_speeds.xlsx', index=False, header=False)
     print(exc)
 
 
 if __name__ == '__main__':
-    solve1()
+    solve4()
 
+    # benches = get_benches(225)
+    # targets = []  # 记录所有的板凳的坐标
+    # for i in range(221):  # 这里直接设死了
+    #     cur_bench = benches[i]
+    #     if cur_bench.theta > 32 * np.pi:
+    #         break
+    #     next_bench = benches[i + 1]
+    #     x0 = (cur_bench.x + next_bench.x) / 2
+    #     y0 = (cur_bench.y + next_bench.y) / 2
+    #     length = cur_bench.length + 2 * HEAD_DISTANCE
+    #     width = BENCH_WIDTH
+    #     k = (cur_bench.y - next_bench.y) / (cur_bench.x - next_bench.x)
+    #
+    #     targets.append(get_rectangle_vertices(x0, y0, length, width, k))
+    #
+    # rec(targets)
