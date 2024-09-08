@@ -74,7 +74,7 @@ def picture_trace(t_limit, t0=100000, b=0.55, v=1, turning_time=None, theta_turn
     """
     res = []
     for i in np.arange(0, t_limit - 1, 0.5):
-        # print(i)
+        print(i)
         if i <= t0:
             first = Bench(2.86)
             head_theta, head_r = locate_normal(i, b, v)

@@ -3,6 +3,9 @@ import math
 import numpy as np
 from scipy.optimize import fsolve
 
+margin = False  # 是否遍历到1 2 区域交界处
+theta0 = 0.0
+
 
 def judge_theta_interval(x1, y1, x2, y2):
 
@@ -39,7 +42,12 @@ def judge_point(cuts, candidates):
                 target_distance = new_distance
         overall.append([candidate, target_point])
     tar = min(overall, key=lambda x: x[1][3])
-    # print('candidates: ', candidates)
+    if len(overall) == 2 and math.fabs(overall[0][1][3] -overall[1][1][3]) < 1e-3:
+        if overall[0][0][2] == 1:
+            tar = overall[0]
+        else:
+            tar = overall[1]
+    # print('candidates: ', candidates, 'most_recent: ', [item[1] for item in overall])
     return tar[0]
 
 
@@ -54,6 +62,8 @@ def point_iterate_normal(bench, b):
     y0 = bench.y
     r_circle = bench.length
     theta_begin = bench.theta
+    if margin:
+        theta_begin = theta0
     theta_range = (theta_begin, theta_begin + np.pi)
 
     theta_solution = fsolve(equations, np.array([(theta_range[0] + theta_range[1]) / 2]), args=(x0, y0, r_circle))[0]
@@ -218,12 +228,22 @@ def point_iterate_turn(bench, b, break_point_r, break_point_theta, cuts):
         if res and len(res) >= 2 and not judge_theta_interval(break_point_x, break_point_y, res[1][0] - circle_center_2_x, res[1][1] - circle_center_2_y):
             candidates.append([res[1][0], res[1][1], 2])
 
-    if valid_1:
+    global margin, theta0
+    if valid_1 and (not valid_2 or 0.7 < point_distance(bench.x, bench.y, break_point_x, break_point_y) / bench.length < 1.3):
+        if bench.region == 2:
+            margin = True
+            theta0 = break_point_theta
+        else:
+            margin = False
         r, theta = point_iterate_normal(bench, b)
+        # 检测一下点的距离是否是板凳长
+        # if 0.9 < math.sqrt((bench.x - r * math.cos(float(theta))) ** 2 + (bench.y - r * math.sin(float(theta))) ** 2) / bench.length < 1.1:
         candidates.append([r * math.cos(float(theta)), r * math.sin(float(theta)), 1])
 
     tar = judge_point(cuts, candidates)
     theta_res = np.atan2(float(tar[1]), float(tar[0]))
+    if tar[2] == 1:
+        theta_res = 2 * np.pi * math.sqrt(float(tar[0]) ** 2 + float(tar[1]) ** 2) / b
     if tar[2] == 4:
         theta_res = math.sqrt(float(tar[0]) ** 2 + float(tar[1]) ** 2) / (b / 2 / np.pi) + np.pi
     return (math.sqrt(float(tar[0]) ** 2 + float(tar[1]) ** 2), theta_res), tar[2]
