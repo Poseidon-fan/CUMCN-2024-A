@@ -4,8 +4,6 @@ import math
 def polar_curve(theta, b):
     return (b / (2 * math.pi)) * theta
 
-    # 计算曲线在 A 点的切线斜率
-
 
 def tangent_slope_at_A(theta, b):
     # r = f(θ) 的导数是常数 0.55 / (2π)
@@ -37,17 +35,17 @@ def get_circles(r0, theta):
     c1_center = 4 / 6 * x1 + 2 / 6 * x2, 4 / 6 * y1 + 2 / 6 * y2
     c2_center = 1 / 6 * x1 + 5 / 6 * x2, 1 / 6 * y1 + 5 / 6 * y2
     c2_start = 1 / 3 * x1 + 2 / 3 * x2, 1 / 3 * y1 + 2 / 3 * y2
-    return c1, c2, c1_r, c2_r
+    return c1, c2, c1_r, c2_r,c1_center,c2_center,c2_start
 
 
 def get_k(region, theta, dot, r0, theta0, b):
     if region == 1:
         return tangent_slope_at_A(theta, b)
-    c1, c2, c1_r, c2_r = get_circles(r0, theta0)
+    c1, c2, c1_r, c2_r,c1_center,c2_center,c2_start = get_circles(r0, theta0)
     if region == 2:
-        return -(dot[0] - c1[0]) / (dot[1] - c1[1])
+        return -(dot[0] - c1_center[0]) / (dot[1] - c1_center[1])
     elif region == 3:
-        return -(dot[0] - c2[0]) / (dot[1] - c2[1])
+        return -(dot[0] - c2_center[0]) / (dot[1] - c2_center[1])
     elif region == 4:
         return tangent_slope_at_A(theta - math.pi, b)
 
@@ -58,6 +56,7 @@ def get_speed(theta_1, r1, speed_1, region1, theta_2, r2, region2, r0, theta0, b
         return 0
     dot1 = r1 * math.cos(theta_1), r1 * math.sin(theta_1)
     dot2 = r2 * math.cos(theta_2), r2 * math.sin(theta_2)
+    a=math.sqrt((dot1[0] - dot2[0]) ** 2 + (dot1[1] - dot2[1]) ** 2)
     # print(region2)
     k_A1 = get_k(region1, theta_1, dot1, r0, theta0, b)
     k_A2 = get_k(region2, theta_2, dot2, r0, theta0, b)

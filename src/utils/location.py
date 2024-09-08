@@ -88,12 +88,11 @@ def locate_turn(r0, theta, t, v):
     else:
         raise("传入参数长度超过圆周长")
 
-
-if __name__ == '__main__':
-    print(locate_turn(1, math.pi / 2, 2 / 3 * math.pi, 1))
-
-
 def locate_normal(t, b=0.55, v=1):
     k = b / 2 / np.pi
     theta_0 = 32 * np.pi  # 初始极角为32π
     return position_after_time(k, v, t, theta_0)
+
+
+if __name__ == '__main__':
+    print(locate_turn(1, math.pi / 2, 2 / 3 * math.pi, 1))

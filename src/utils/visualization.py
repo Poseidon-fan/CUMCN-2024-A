@@ -52,8 +52,8 @@ def rec(rectangles):
         ax.add_patch(polygon)
 
     # 设置轴的范围和比例
-    ax.set_xlim(-20, 20)
-    ax.set_ylim(-20, 20)
+    ax.set_xlim(-15, 15)
+    ax.set_ylim(-15, 15)
     ax.set_aspect('equal', adjustable='box')
 
     # 显示图形

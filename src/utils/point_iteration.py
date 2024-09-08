@@ -203,30 +203,6 @@ def point_iterate_turn(bench, b, break_point_r, break_point_theta, cuts):
 
     valid_4 = bench.region == 4
 
-    # if valid_4:
-    #     return handle_region_4(bench, b), 4
-    # if valid_3:
-    #     res = handle_region_2_3(3, break_point_r, bench.x, bench.y, bench.length)
-    #     if judge_theta_interval(break_point_x, break_point_y, res[0][0] - circle_center_3_x, res[0][1] - circle_center_3_y):
-    #         return (math.sqrt(res[0][0] ** 2 + res[0][1] ** 2), np.atan2(res[0][1], res[0][0])), 3
-    #     elif judge_theta_interval(break_point_x, break_point_y, res[1][0] - circle_center_3_x, res[1][1] - circle_center_3_y):
-    #         return (math.sqrt(res[1][0] ** 2 + res[1][1] ** 2), np.atan2(res[1][1], res[1][0])), 3
-    #     else:
-    #         raise ('非法的3区域')
-    # elif valid_2:
-    #     res = handle_region_2_3(2, break_point_r, bench.x, bench.y, bench.length)
-    #     if judge_theta_interval(break_point_x, break_point_y, res[0][0] - circle_center_2_x,
-    #                             res[0][1] - circle_center_2_y):
-    #         return (math.sqrt(res[0][0] ** 2 + res[0][1] ** 2), np.atan2(res[0][1], res[0][0])), 2
-    #     elif judge_theta_interval(break_point_x, break_point_y, res[1][0] - circle_center_2_x,
-    #                               res[1][1] - circle_center_2_y):
-    #         return (math.sqrt(res[1][0] ** 2 + res[1][1] ** 2), np.atan2(res[1][1], res[1][0])), 2
-    #     else:
-    #         raise ('非法的2区域')
-    # elif valid_4:
-    #     return handle_region_4(bench, b), 4
-    # else:
-    #     return point_iterate_normal(bench, b), 1
     candidates = []
     if valid_4:
         r, theta = handle_region_4(bench, b)
@@ -252,8 +228,7 @@ def point_iterate_turn(bench, b, break_point_r, break_point_theta, cuts):
         else:
             margin = False
         r, theta = point_iterate_normal(bench, b)
-        # 检测一下点的距离是否是板凳长
-        # if 0.9 < math.sqrt((bench.x - r * math.cos(float(theta))) ** 2 + (bench.y - r * math.sin(float(theta))) ** 2) / bench.length < 1.1:
+
         candidates.append([r * math.cos(float(theta)), r * math.sin(float(theta)), 1])
 
     if len(candidates) == 0:

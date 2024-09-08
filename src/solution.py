@@ -1,10 +1,7 @@
 import math
 
-import matplotlib
 import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt
-from matplotlib.animation import FuncAnimation
 
 from src.utils.bench_status import get_benches, picture_trace
 from src.utils.location import locate_normal
@@ -12,7 +9,7 @@ from src.utils.overall_length import overall_length
 from src.utils.rec_overlap import is_rectangle_overlap
 from src.utils.rec_transform import get_rectangle_vertices
 from src.utils.speed import get_benches_speed
-from src.utils.visualization import line, serializer, rec, scatter
+from src.utils.visualization import line, rec, scatter
 
 BENCH_WIDTH = 0.3  # 板凳宽
 HEAD_DISTANCE = 0.275  # 孔到头部距离
@@ -80,17 +77,17 @@ def solve1():
 
 def solve2():
     global benches
-    # limits = []
-    # for i in np.arange(412, 413, 0.001):
-    #     print(i)
-    #     benches = get_benches(i)
-    #
-    #     if not validate():
-    #         limits.append(i)
+    limits = []
+    for i in np.arange(412, 413, 0.001):
+        print(i)
+        benches = get_benches(i)
+
+        if not validate():
+            limits.append(i)
     # print('limits: ', limits)
 
-    # t_limit = limits[0]
-    t_limit = 412.4739999999888
+    t_limit = limits[0]
+    # t_limit = 412.4739999999888
     res = []
     benches = get_benches(t_limit)
     get_benches_speed(1, benches, None, None, 0.55)
@@ -98,7 +95,7 @@ def solve2():
     scatter(benches)
     line(benches)
     targets = []  # 记录所有的板凳的坐标
-    for i in range(222):  # 这里直接设死了
+    for i in range(222):  # 这里直接写死了
         cur_bench = benches[i]
         next_bench = benches[i + 1]
         x0 = (cur_bench.x + next_bench.x) / 2
@@ -171,48 +168,18 @@ def solve4():
     global benches, b
     b = 1.7
     v = 1  # 该问中速度恒为1
-    t0 = 1333.35  # todo 开始掉头的时刻，当做外层循环变量，后面要循环
+    t0 = 1333.35
     theta_turn, r_turn = locate_normal(t0, b)  # 掉头时刻的极角与极径（掉头圆的半径）
     turning_length = np.pi * r_turn  # 掉头空间内走的路径长度
     turning_time = turning_length / v  # 掉头空间内走的时间
     t_limit = t0 * 2 + turning_time  # 整个龙走出的时间
     cuts = picture_trace(t_limit, t0=t0, b=b, v=v, turning_time=turning_time, theta_turn=theta_turn, r_turn=r_turn)
 
-
-
-    # for t in np.arange(t0, t_limit, 0.1):
-    #     benches = get_benches(t, t0=t0, b=b, v=v, turning_time=turning_time)
-    #     if not validate():
-    #         pass
-
-    # for i in np.arange(0, t_limit - 2, 2):
-    #     benches = get_benches(i, t0=t0, b=b, v=v, turning_time=turning_time, theta_turn=theta_turn,
-    #                           r_turn=r_turn)
-    #     cuts.append([benches[0].x, benches[0].y])
-
-    # x_coords = [point[0] for point in cuts]
-    # y_coords = [point[1] for point in cuts]
-    # # df = pd.DataFrame({
-    # #     'x': x_coords,
-    # #     'y': y_coords
-    # # })
-    # # df.to_csv('dot.csv')
-    #
-    # # 画折线图
-    # plt.figure(figsize=(8, 6))
-    # plt.plot(x_coords, y_coords, marker='o', linestyle='-', color='b')
-    # plt.title("Line Plot of Given Points")
-    # plt.xlabel("X Coordinate")
-    # plt.ylabel("Y Coordinate")
-    # plt.axis('equal')
-    # plt.grid(True)
-    # plt.show()
-
-    # benches = get_benches(t0 + 2, t0=t0, b=b, v=v, turning_time=turning_time, theta_turn=theta_turn, r_turn=r_turn, cuts=cuts)
     exc = []
     speeds = []
     locations = []
-    for i in range(90, 100):
+    # collects = []
+    for i in np.arange(13.54, 13.56, 0.001):
         print(i)
         try:
             cur_speed = []
@@ -244,40 +211,46 @@ def solve4():
         except Exception as e:
             print('Wrong!!!', i)
             exc.append(i)
+
+    # df = pd.DataFrame(collects)
+    # df.to_csv('log.csv')
     df_location = pd.DataFrame(locations).round(6).transpose()
     df_speed = pd.DataFrame(speeds).round(6).transpose()
     df_location.to_excel('res4_locations.xlsx', index=False, header=False)
     df_speed.to_excel('res4_speeds.xlsx', index=False, header=False)
-    print(exc)
+    print('exc: ', exc)
 
 
 def solve5():
+    global benches, b
     b = 1.7
-    t0 = 1333.35  # todo 开始掉头的时刻，当做外层循环变量，后面要循环
+    v = 1  # 该问中速度恒为1
+    t0 = 1333.35
     theta_turn, r_turn = locate_normal(t0, b)  # 掉头时刻的极角与极径（掉头圆的半径）
     turning_length = np.pi * r_turn  # 掉头空间内走的路径长度
-    for v in np.arange(1.0, 2.0, 0.01):
-        turning_time = turning_length / v  # 掉头空间内走的时间
-        t_limit = t0 * 2 + turning_time  # 整个龙走出的时间
-        cuts = picture_trace(t_limit, t0=t0, b=b, v=v, turning_time=turning_time, theta_turn=theta_turn, r_turn=r_turn)
+    turning_time = turning_length / v  # 掉头空间内走的时间
+    t_limit = t0 * 2 + turning_time  # 整个龙走出的时间
+    cuts = picture_trace(t_limit, t0=t0, b=b, v=v, turning_time=turning_time, theta_turn=theta_turn, r_turn=r_turn)
 
+    for i in np.arange(13.54, 13.56, 0.001):
+        print(i)
+        benches = get_benches(t0 + i, t0=t0, b=b, v=v, turning_time=turning_time, theta_turn=theta_turn, r_turn=r_turn, cuts=cuts)
+        get_benches_speed(v, benches, r_turn, theta_turn, b)
+
+        max_speed = 0
+        target_region = None
+        which = None
+        for j in range(len(benches)):
+            bench = benches[j]
+            if bench.speed > max_speed:
+                max_speed = bench.speed
+                target_region = bench.region
+                which = j
+        print(i, which, [max_speed, target_region])
 
 if __name__ == '__main__':
+    solve1()
+    solve2()
+    solve3()
     solve4()
-
-    # benches = get_benches(225)
-    # targets = []  # 记录所有的板凳的坐标
-    # for i in range(221):  # 这里直接设死了
-    #     cur_bench = benches[i]
-    #     if cur_bench.theta > 32 * np.pi:
-    #         break
-    #     next_bench = benches[i + 1]
-    #     x0 = (cur_bench.x + next_bench.x) / 2
-    #     y0 = (cur_bench.y + next_bench.y) / 2
-    #     length = cur_bench.length + 2 * HEAD_DISTANCE
-    #     width = BENCH_WIDTH
-    #     k = (cur_bench.y - next_bench.y) / (cur_bench.x - next_bench.x)
-    #
-    #     targets.append(get_rectangle_vertices(x0, y0, length, width, k))
-    #
-    # rec(targets)
+    solve5()
